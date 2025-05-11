@@ -2,14 +2,21 @@
 #include <iostream>
 
 int main() {
-    NtruCrypto crypto;
+    using namespace NTRUCrypto;
 
-    std::string message = "This is a secret message.";
-    std::string ciphertext = crypto.encrypt(message);
-    std::string decrypted = crypto.decrypt(ciphertext);
+    EncryptionPublicKey pub;
+    EncryptionPrivateKey priv;
+    GenerateKeyPair(pub, priv);
 
-    std::cout << "Encrypted (Base64): " << ciphertext << std::endl;
-    std::cout << "Decrypted Message: " << decrypted << std::endl;
+    Encryptor enc(pub);
+    Decryptor dec(priv);
+
+    std::string message = "This is a test message.";
+    std::string cipher = enc.encrypt(message);
+    std::string plain = dec.decrypt(cipher);
+
+    std::cout << "Encrypted: " << cipher << std::endl;
+    std::cout << "Decrypted: " << plain << std::endl;
 
     return 0;
 }

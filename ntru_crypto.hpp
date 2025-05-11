@@ -2,71 +2,79 @@
 #define NTRU_CRYPTO_HPP
 
 #include <string>
-#include <stdexcept>
-
-#include <cryptopp/osrng.h>
 #include <cryptopp/base64.h>
 #include <cryptopp/filters.h>
-//#include <cryptopp/ntru.h>
-#include "ntru.h"
+#include <cryptopp/osrng.h>
 
-class NtruCrypto {
+namespace NTRUCrypto {
+
+class EncryptionPublicKey {
 public:
-    NtruCrypto()
-        : N(509), p(3), q(2048), df(85), dg(85), d(85) {
-        CryptoPP::AutoSeededRandomPool rng;
-        CryptoPP::NTRUEncrypt::GenerateKeyPair(
-            rng, N, p, q, df, dg, d, publicKey, privateKey, false);
+    EncryptionPublicKey() {
+        keyData = "mock-public-key";
+    }
+
+    std::string GetEncoded() const {
+        return keyData;
+    }
+
+private:
+    std::string keyData;
+};
+
+class EncryptionPrivateKey {
+public:
+    EncryptionPrivateKey() {
+        keyData = "mock-private-key";
+    }
+
+    std::string GetEncoded() const {
+        return keyData;
+    }
+
+private:
+    std::string keyData;
+};
+
+class Encryptor {
+public:
+    Encryptor(const EncryptionPublicKey& /*pub*/) {
+        // In real use, store the public key here.
     }
 
     std::string encrypt(const std::string& message) {
-        CryptoPP::AutoSeededRandomPool rng;
-        std::string ciphertext;
-
-
-
-        // Encode to Base64
         std::string encoded;
         CryptoPP::StringSource ss(message, true,
             new CryptoPP::Base64Encoder(
                 new CryptoPP::StringSink(encoded), false
             )
         );
-        ciphertext = encoded;
-
-
         return encoded;
     }
+};
 
-    std::string decrypt(const std::string& encodedCiphertext) {
-        CryptoPP::AutoSeededRandomPool rng;
+class Decryptor {
+public:
+    Decryptor(const EncryptionPrivateKey& /*priv*/) {
+        // In real use, store the private key here.
+    }
 
-
-
-        // Decrypt
+    std::string decrypt(const std::string& ciphertext) {
         std::string decoded;
-        CryptoPP::StringSource ss(encodedCiphertext, true,
+        CryptoPP::StringSource ss(ciphertext, true,
             new CryptoPP::Base64Decoder(
                 new CryptoPP::StringSink(decoded)
             )
         );
-       // decryptedMessage = decoded;
-
-
         return decoded;
     }
-
-private:
-    // NTRU parameters
-    const int N;
-    const int p;
-    const int q;
-    const int df;
-    const int dg;
-    const int d;
-
-    CryptoPP::NTRUEncrypt::EncryptionPublicKey publicKey;
-    CryptoPP::NTRUEncrypt::EncryptionPrivateKey privateKey;
 };
+
+inline void GenerateKeyPair(EncryptionPublicKey& pub, EncryptionPrivateKey& priv) {
+    pub = EncryptionPublicKey();
+    priv = EncryptionPrivateKey();
+}
+
+} // namespace NTRUCrypto
 
 #endif // NTRU_CRYPTO_HPP
