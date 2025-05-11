@@ -1,59 +1,41 @@
 #include <iostream>
+#include <vector>
 #include <string>
-#include "ntru_crypto.hpp"
-
-using namespace std;
+#include "ntru_crypto.hpp"  // Your custom header with Encrypt/Decrypt and keygen
 
 int main() {
-    // Step 1: Key generation
-    std::vector<CryptoPP::Integer> publicKey;
-    std::vector<CryptoPP::Integer> privateKey;
+    using CryptoPP::Integer;
 
-    // Generate the key pair (public and private keys)
-    NTRUCrypto::GenerateKeyPair(publicKey, privateKey);
-    cout << "Public and Private keys generated." << endl;
+    // Choose small parameters for demonstration
+    size_t keySize = 32;            // Length of key polynomials
+    Integer p = 256;                // Plaintext modulus, match ASCII
+    Integer q = 4096;               // Large modulus for encryption math
 
-    // Debug: Print the public and private keys
-    cout << "Public Key: ";
-    for (const auto& val : publicKey) {
-        cout << val << " ";
-    }
-    cout << endl;
+    // Generate keys
+    auto publicKey = NTRUCrypto::generateRandomPolynomial(keySize, q);
+    auto privateKey = NTRUCrypto::generateRandomPolynomial(keySize, q);
+    std::cout << "Public and Private keys generated.\n";
 
-    cout << "Private Key: ";
-    for (const auto& val : privateKey) {
-        cout << val << " ";
-    }
-    cout << endl;
-
-    // Step 2: Encryption
+    // Message
     std::string message = "Hello, NTRU!";
-    cout << "Original message: " << message << endl;
+    std::cout << "Original message: " << message << std::endl;
 
-    // Encrypt the message
-    std::vector<CryptoPP::Integer> ciphertext = NTRUCrypto::Encrypt(message, publicKey);
-    cout << "Message encrypted." << endl;
+    // Encrypt
+    auto ciphertext = NTRUCrypto::Encrypt(message, publicKey, p, q);
+    std::cout << "Message encrypted.\nCiphertext: ";
+    for (const auto& c : ciphertext)
+        std::cout << c << ".. ";
+    std::cout << "\n";
 
-    // Debug: Print the ciphertext
-    cout << "Ciphertext: ";
-    for (const auto& val : ciphertext) {
-        cout << val << " ";
-    }
-    cout << endl;
+    // Decrypt
+    std::string decryptedMessage = NTRUCrypto::Decrypt(ciphertext, privateKey, p, q, message.length());
+    std::cout << "Decrypted message: " << decryptedMessage << std::endl;
 
-    // Step 3: Decryption
-    CryptoPP::Integer p(3);
-    CryptoPP::Integer q(2048);
-
-    std::string decryptedMessage = NTRUCrypto::Decrypt(ciphertext, privateKey, p, q);
-
-    cout << "Decrypted message: " << decryptedMessage << endl;
-
-    // Checking if the decrypted message matches the original
-    if (message == decryptedMessage) {
-        cout << "Decryption successful! The message matches the original." << endl;
+    // Check
+    if (decryptedMessage == message) {
+        std::cout << "Decryption successful!" << std::endl;
     } else {
-        cout << "Decryption failed! The message does not match the original." << endl;
+        std::cout << "Decryption failed!" << std::endl;
     }
 
     return 0;
