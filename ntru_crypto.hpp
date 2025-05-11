@@ -48,6 +48,43 @@ std::vector<Integer> multiplyPolynomials(const std::vector<Integer>& poly1, cons
     return result;
 }
 
+std::vector<Integer> addPolynomials(const std::vector<Integer>& poly1, const std::vector<Integer>& poly2, const Integer& modulus) {
+    size_t max_size = std::max(poly1.size(), poly2.size());
+    std::vector<Integer> result(max_size);
+
+    for (size_t i = 0; i < max_size; ++i) {
+        Integer coeff1 = (i < poly1.size()) ? poly1[i] : Integer(0L);
+        Integer coeff2 = (i < poly2.size()) ? poly2[i] : Integer(0L);
+        result[i] = (coeff1 + coeff2) % modulus;
+    }
+
+    return result;
+}
+
+std::vector<Integer> multiplyPolynomials(const std::vector<Integer>& poly1, const std::vector<Integer>& poly2, const Integer& modulus) {
+    size_t size = poly1.size() + poly2.size() - 1;
+    std::vector<Integer> result(size);
+
+    for (size_t i = 0; i < poly1.size(); ++i) {
+        for (size_t j = 0; j < poly2.size(); ++j) {
+            result[i + j] = (result[i + j] + (poly1[i] * poly2[j])) % modulus;
+        }
+    }
+
+    return result;
+}
+
+std::vector<Integer> modPolynomial(const std::vector<Integer>& poly, const Integer& modulus) {
+    std::vector<Integer> result(poly.size());
+
+    for (size_t i = 0; i < poly.size(); ++i) {
+        result[i] = poly[i] % modulus;
+    }
+
+    return result;
+}
+
+
 // Extended Euclidean Algorithm for polynomials
 std::vector<Integer> extendedEuclid(const std::vector<Integer>& a, const std::vector<Integer>& b, int modulus) {
     std::vector<Integer> r0 = a;
@@ -111,16 +148,26 @@ std::vector<Integer> Encrypt(const std::string& message, const std::vector<Integ
 }
 
 // Decryption: Decrypt message using private key
-std::string Decrypt(const std::vector<Integer>& ciphertext, const std::vector<Integer>& privateKey) {
-    // Simplified decryption by using the private key polynomial
-    std::vector<Integer> temp = multiplyPolynomials(ciphertext, privateKey, p);
+std::string Decrypt(const std::vector<Integer>& ciphertext, const std::vector<Integer>& privateKey, const Integer& p, const Integer& q) {
+    // Step 1: Multiply the ciphertext by the private key polynomial (this is a simplified decryption)
+    std::vector<Integer> decryptedPoly = multiplyPolynomials(ciphertext, privateKey, q);
 
-    // Decode the polynomial into a message (this is simplified)
-    std::string decryptedMessage = "Decrypted message!";
+    // Step 2: Reduce the result modulo p and q
+    decryptedPoly = modPolynomial(decryptedPoly, p);  // Modulo p
+    decryptedPoly = modPolynomial(decryptedPoly, q);  // Modulo q
 
-    // In a real implementation, we'd recover the original message here by checking error correction
+    // Step 3: Recover the original message (this is simplified; real NTRU would handle error correction)
+    std::string decryptedMessage = "";
+    for (const Integer& coeff : decryptedPoly) {
+        // Convert the Integer to a long value and then cast to char
+        long coeffValue = coeff.ConvertToLong(); // assuming the coefficient is small enough
+        decryptedMessage += static_cast<char>(coeffValue); // Convert the integer to a character
+    }
+
     return decryptedMessage;
 }
+
+
 
 } // namespace NTRUCrypto
 

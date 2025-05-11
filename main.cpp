@@ -13,6 +13,19 @@ int main() {
     NTRUCrypto::GenerateKeyPair(publicKey, privateKey);
     cout << "Public and Private keys generated." << endl;
 
+    // Debug: Print the public and private keys
+    cout << "Public Key: ";
+    for (const auto& val : publicKey) {
+        cout << val << " ";
+    }
+    cout << endl;
+
+    cout << "Private Key: ";
+    for (const auto& val : privateKey) {
+        cout << val << " ";
+    }
+    cout << endl;
+
     // Step 2: Encryption
     std::string message = "Hello, NTRU!";
     cout << "Original message: " << message << endl;
@@ -21,8 +34,19 @@ int main() {
     std::vector<CryptoPP::Integer> ciphertext = NTRUCrypto::Encrypt(message, publicKey);
     cout << "Message encrypted." << endl;
 
+    // Debug: Print the ciphertext
+    cout << "Ciphertext: ";
+    for (const auto& val : ciphertext) {
+        cout << val << " ";
+    }
+    cout << endl;
+
     // Step 3: Decryption
-    std::string decryptedMessage = NTRUCrypto::Decrypt(ciphertext, privateKey);
+    CryptoPP::Integer p(3);
+    CryptoPP::Integer q(2048);
+
+    std::string decryptedMessage = NTRUCrypto::Decrypt(ciphertext, privateKey, p, q);
+
     cout << "Decrypted message: " << decryptedMessage << endl;
 
     // Checking if the decrypted message matches the original
