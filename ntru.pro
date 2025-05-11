@@ -19,8 +19,7 @@ SOURCES += \
     main.cpp
 
 HEADERS += \
-ntru_crypto.hpp\
-ntru.h
+ntru_crypto.hpp
 
 FORMS += \
 
