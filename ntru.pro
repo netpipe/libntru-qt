@@ -16,16 +16,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    main.cpp
-
+    main.cpp\
+NtruEncryptQt.cpp
 HEADERS += \
-ntru_crypto.hpp
+NtruEncryptQt.h
 
 FORMS += \
 
-LIBS += -L/Users/macbook2015/Desktop/brew/lib -lcryptopp
+LIBS += -L/Users/macbook2015/Desktop/brew/lib -lNTRUEncrypt
 
-INCLUDEPATH += /Users/macbook2015/Desktop/brew/include /Users/macbook2015/Desktop/brew/lib
+INCLUDEPATH += /Users/macbook2015/Desktop/brew/include /Users/macbook2015/Desktop/brew/lib ./libNTRUEncrypt
 
 
 # Default rules for deployment.
